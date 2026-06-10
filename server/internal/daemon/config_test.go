@@ -857,3 +857,68 @@ func agentKeys(m map[string]AgentEntry) []string {
 	sort.Strings(keys)
 	return keys
 }
+
+func TestParseRuntimeConfig_PiBackend(t *testing.T) {
+	raw := `{"backend":"pi","pi":{"mode":"agent","thinkingLevel":"high","maxTurns":20,"extensions":["code-interpreter","web-search"]}}`
+	cfg, err := ParseRuntimeConfig(raw)
+	if err != nil {
+		t.Fatalf("ParseRuntimeConfig: %v", err)
+	}
+	if cfg.Backend != "pi" {
+		t.Errorf("Backend = %q, want %q", cfg.Backend, "pi")
+	}
+	if cfg.Pi == nil {
+		t.Fatal("Pi config is nil")
+	}
+	if cfg.Pi.Mode != "agent" {
+		t.Errorf("Pi.Mode = %q, want %q", cfg.Pi.Mode, "agent")
+	}
+	if cfg.Pi.ThinkingLevel != "high" {
+		t.Errorf("Pi.ThinkingLevel = %q, want %q", cfg.Pi.ThinkingLevel, "high")
+	}
+	if cfg.Pi.MaxTurns != 20 {
+		t.Errorf("Pi.MaxTurns = %d, want 20", cfg.Pi.MaxTurns)
+	}
+	if len(cfg.Pi.Extensions) != 2 {
+		t.Errorf("len(Pi.Extensions) = %d, want 2", len(cfg.Pi.Extensions))
+	}
+	if cfg.Pi.Extensions[0] != "code-interpreter" {
+		t.Errorf("Pi.Extensions[0] = %q, want %q", cfg.Pi.Extensions[0], "code-interpreter")
+	}
+}
+
+func TestParseRuntimeConfig_Defaults(t *testing.T) {
+	// Empty string returns defaults.
+	cfg, err := ParseRuntimeConfig("")
+	if err != nil {
+		t.Fatalf("ParseRuntimeConfig empty: %v", err)
+	}
+	if cfg.Backend != "claude" {
+		t.Errorf("Backend = %q, want %q", cfg.Backend, "claude")
+	}
+
+	// Explicit empty backend defaults to claude.
+	cfg, err = ParseRuntimeConfig(`{}`)
+	if err != nil {
+		t.Fatalf("ParseRuntimeConfig empty object: %v", err)
+	}
+	if cfg.Backend != "claude" {
+		t.Errorf("Backend = %q, want %q", cfg.Backend, "claude")
+	}
+
+	// Explicit claude backend.
+	cfg, err = ParseRuntimeConfig(`{"backend":"claude"}`)
+	if err != nil {
+		t.Fatalf("ParseRuntimeConfig claude: %v", err)
+	}
+	if cfg.Backend != "claude" {
+		t.Errorf("Backend = %q, want %q", cfg.Backend, "claude")
+	}
+}
+
+func TestParseRuntimeConfig_Invalid(t *testing.T) {
+	_, err := ParseRuntimeConfig(`{invalid}`)
+	if err == nil {
+		t.Fatal("expected error for invalid JSON, got nil")
+	}
+}
