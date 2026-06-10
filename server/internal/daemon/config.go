@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/url"
@@ -15,6 +16,7 @@ import (
 	"github.com/mattn/go-shellwords"
 
 	"github.com/multica-ai/multica/server/internal/cli"
+	"github.com/multica-ai/multica/server/internal/daemon/backend"
 )
 
 const (
@@ -859,4 +861,21 @@ func applyOpenclawOverride(oc *cli.OpenClawOverride) {
 			_ = os.Setenv("OPENCLAW_STATE_DIR", oc.StateDir)
 		}
 	}
+}
+
+// ParseRuntimeConfig parses a raw JSON runtime-config string into a
+// backend.RuntimeConfig. An empty input returns the default (backend="claude").
+// An invalid JSON string returns an error.
+func ParseRuntimeConfig(raw string) (backend.RuntimeConfig, error) {
+	cfg := backend.RuntimeConfig{Backend: "claude"}
+	if raw == "" {
+		return cfg, nil
+	}
+	if err := json.Unmarshal([]byte(raw), &cfg); err != nil {
+		return backend.RuntimeConfig{}, fmt.Errorf("invalid runtime config JSON: %w", err)
+	}
+	if cfg.Backend == "" {
+		cfg.Backend = "claude"
+	}
+	return cfg, nil
 }
