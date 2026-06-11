@@ -41,11 +41,12 @@ func (c *ClaudeBackend) Execute(_ context.Context, _ ExecuteRequest) (ExecuteRes
 	return ExecuteResult{}, fmt.Errorf("not implemented")
 }
 
-// CodexBackend implements Backend for Codex.
-type CodexBackend struct{}
-
-func (c *CodexBackend) Execute(_ context.Context, _ ExecuteRequest) (ExecuteResult, error) {
-	return ExecuteResult{}, fmt.Errorf("not implemented")
+// CodexBackend implements Backend by spawning the Codex CLI as a
+// subprocess. ExecPath overrides the default "codex" binary name for
+// tests and non-standard installations. See codex.go for the Execute
+// implementation.
+type CodexBackend struct {
+	ExecPath string
 }
 
 // PiBackend implements Backend for Pi.
