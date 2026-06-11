@@ -17,6 +17,7 @@ type ExecuteRequest struct {
 	AgentName string
 	Model     string
 	MaxTurns  int
+	Tools     []string
 }
 
 // ExecuteResult holds the output of an agent run.
