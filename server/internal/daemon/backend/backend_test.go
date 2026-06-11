@@ -11,38 +11,10 @@ func TestBackendInterface(t *testing.T) {
 	var _ Backend = &CodexBackend{}
 	var _ Backend = &PiBackend{}
 
-	ctx := context.Background()
-	req := ExecuteRequest{
-		Prompt:    "test",
-		WorkDir:   "/tmp",
-		Env:       []string{"FOO=bar"},
-		AgentName: "test-agent",
-		Model:     "claude-sonnet-4-6",
-		MaxTurns:  10,
-	}
-
-	// ClaudeBackend and PiBackend are stubs that return "not implemented".
-	// CodexBackend has a real implementation tested in codex_test.go.
-	backends := []struct {
-		name string
-		b    Backend
-	}{
-		{"ClaudeBackend", &ClaudeBackend{}},
-		{"PiBackend", &PiBackend{}},
-	}
-
-	for _, tc := range backends {
-		t.Run(tc.name, func(t *testing.T) {
-			result, err := tc.b.Execute(ctx, req)
-			// All stubs return "not implemented" errors for now.
-			if err == nil {
-				t.Error("expected not-implemented error, got nil")
-			}
-			if result.ExitCode != 0 {
-				t.Errorf("expected zero ExitCode, got %d", result.ExitCode)
-			}
-		})
-	}
+	// All three backends (Claude, Codex, Pi) have real implementations
+	// tested in their respective test files (claude_test.go, codex_test.go,
+	// pi_test.go). No stubs remain.
+	_ = context.Background()
 }
 
 func TestExecuteRequest(t *testing.T) {

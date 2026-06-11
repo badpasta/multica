@@ -1,8 +1,8 @@
 package backend
 
 import (
-	"context"
 	"fmt"
+	"log/slog"
 )
 
 // PiConfig holds Pi-specific backend configuration.
@@ -38,11 +38,12 @@ func NewBackend(cfg RuntimeConfig) (Backend, error) {
 	}
 }
 
-// ClaudeBackend implements Backend for Claude Code.
-type ClaudeBackend struct{}
-
-func (c *ClaudeBackend) Execute(_ context.Context, _ ExecuteRequest) (ExecuteResult, error) {
-	return ExecuteResult{}, fmt.Errorf("not implemented")
+// ClaudeBackend implements Backend for Claude Code by spawning the claude
+// CLI as a subprocess. ExecutablePath overrides the default "claude" lookup
+// (useful for testing with a fake binary). Logger captures diagnostic output.
+type ClaudeBackend struct {
+	ExecutablePath string
+	Logger         *slog.Logger
 }
 
 // CodexBackend implements Backend by spawning the Codex CLI as a

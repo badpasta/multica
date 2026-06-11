@@ -11,13 +11,14 @@ type Backend interface {
 
 // ExecuteRequest holds all parameters needed to execute an agent run.
 type ExecuteRequest struct {
-	Prompt    string
-	WorkDir   string
-	Env       []string
-	AgentName string
-	Model     string
-	MaxTurns  int
-	Tools     []string
+	Prompt        string
+	WorkDir       string
+	Env           []string
+	AgentName     string
+	Model         string
+	MaxTurns      int
+	Tools         []string
+	ThinkingLevel string // reasoning effort level (e.g. "low", "medium", "high"); empty = runtime default
 }
 
 // ExecuteResult holds the output of an agent run.
