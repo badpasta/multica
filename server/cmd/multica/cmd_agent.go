@@ -15,6 +15,7 @@ import (
 
 	"github.com/multica-ai/multica/server/internal/cli"
 	"github.com/multica-ai/multica/server/internal/daemon"
+	"github.com/multica-ai/multica/server/pkg/agent"
 )
 
 var agentCmd = &cobra.Command{
@@ -441,6 +442,13 @@ func runAgentCreate(cmd *cobra.Command, _ []string) error {
 		var rc any
 		if err := json.Unmarshal([]byte(v), &rc); err != nil {
 			return fmt.Errorf("--runtime-config must be valid JSON: %w", err)
+		}
+		// Validate pi backend constraints before sending to the server so
+		// users get a clear, local error instead of a cryptic 400 from
+		// the API (or worse, a silently persisted misconfiguration that
+		// only surfaces when the daemon tries to run a task).
+		if _, err := agent.ValidateRuntimeConfig([]byte(v)); err != nil {
+			return fmt.Errorf("--runtime-config: %w", err)
 		}
 		body["runtime_config"] = rc
 	}
