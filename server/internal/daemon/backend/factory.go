@@ -28,7 +28,11 @@ func NewBackend(cfg RuntimeConfig) (Backend, error) {
 	case "codex":
 		return &CodexBackend{}, nil
 	case "pi":
-		return &PiBackend{}, nil
+		piCfg := PiConfig{}
+		if cfg.Pi != nil {
+			piCfg = *cfg.Pi
+		}
+		return &PiBackend{Config: piCfg}, nil
 	default:
 		return nil, fmt.Errorf("unknown backend: %q", cfg.Backend)
 	}
@@ -45,12 +49,5 @@ func (c *ClaudeBackend) Execute(_ context.Context, _ ExecuteRequest) (ExecuteRes
 type CodexBackend struct{}
 
 func (c *CodexBackend) Execute(_ context.Context, _ ExecuteRequest) (ExecuteResult, error) {
-	return ExecuteResult{}, fmt.Errorf("not implemented")
-}
-
-// PiBackend implements Backend for Pi.
-type PiBackend struct{}
-
-func (p *PiBackend) Execute(_ context.Context, _ ExecuteRequest) (ExecuteResult, error) {
 	return ExecuteResult{}, fmt.Errorf("not implemented")
 }
