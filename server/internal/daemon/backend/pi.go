@@ -55,7 +55,12 @@ type PiBackend struct {
 	binaryPath string
 
 	// runner abstracts subprocess execution; nil defaults to piRunner.
+	// Used by the print-mode Execute path.
 	runner commandRunner
+
+	// rpcProcessFactory, when non-nil, produces the piRPCProcess used by
+	// ExecuteRPC instead of the default realRPCProcess. Test-only.
+	rpcProcessFactory func(ctx context.Context, args []string, dir string, env []string) piRPCProcess
 }
 
 // Execute runs the Pi CLI in print mode and returns the captured output.
