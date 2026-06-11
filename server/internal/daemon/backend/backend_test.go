@@ -21,12 +21,13 @@ func TestBackendInterface(t *testing.T) {
 		MaxTurns:  10,
 	}
 
+	// ClaudeBackend and PiBackend are stubs that return "not implemented".
+	// CodexBackend has a real implementation tested in codex_test.go.
 	backends := []struct {
 		name string
 		b    Backend
 	}{
 		{"ClaudeBackend", &ClaudeBackend{}},
-		{"CodexBackend", &CodexBackend{}},
 		{"PiBackend", &PiBackend{}},
 	}
 
